@@ -1,0 +1,13 @@
+{
+  "name": "actividad-2",
+  "version": "1.0.0",
+  "description": "Actividad 2 - Aplicaciones Web 2",
+  "main": "index.mjs",
+  "scripts": {
+    "dev": "node index.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module"
+}
