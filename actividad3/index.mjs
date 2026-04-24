@@ -1,34 +1,9 @@
-//  Importar módulos necesarios (http, fs/promises, path)
+// Importar módulos necesarios
 import http from 'node:http';
-import fs from 'node:fs/promises';
-import path from 'node:path';
+import { fetchAndSave } from './modules/fetchAndSave.mjs';
+import { readFile } from './modules/readFile.mjs';
 
-//  Construir la ruta al archivo usuarios.json
-const filePath = path.resolve('usuarios.json');
-
-//  Función que obtiene usuarios de la API y los guarda en el archivo
-async function fetchAndSave() {
-    const response = await fetch('https://api.escuelajs.co/api/v1/users');
-    const users = await response.json();
-
-    const formattedUsers = users.map((user) => {
-        return {
-            id: user.id,
-            email: user.email,
-            name: user.name
-        };
-    });
-
-    await fs.writeFile(filePath, JSON.stringify(formattedUsers, null, 2));
-}
-
-//  Función que lee el archivo usuarios.json
-async function readFile() {
-    const data = await fs.readFile(filePath, 'utf-8');
-    return data;
-}
-
-// Crear el servidor HTTP
+//  Crear el servidor HTTP
 const server = http.createServer(async (req, res) => {
     try {
         //  Si la ruta es /usuarios y el verbo es GET
@@ -38,7 +13,16 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(data);
 
-        //  Para cualquier otra ruta o verbo
+        // Extra 1: Si la ruta es /usuarios/filtrados y el verbo es GET
+        } else if (req.url === '/usuarios/filtrados' && req.method === 'GET') {
+            await fetchAndSave();
+            const data = await readFile();
+            const usuarios = JSON.parse(data);
+            const filtrados = usuarios.filter((user) => user.id < 10);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(filtrados, null, 2));
+
+        // Para cualquier otra ruta o verbo
         } else {
             res.writeHead(404, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ mensaje: 'Recurso no encontrado' }));
@@ -50,7 +34,7 @@ const server = http.createServer(async (req, res) => {
     }
 });
 
-//  Poner el servidor a escuchar en un puerto
+//  Poner el servidor a escuchar en el puerto 3000
 server.listen(3000, () => {
     console.log('Servidor corriendo en http://localhost:3000');
 });
