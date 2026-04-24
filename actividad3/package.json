@@ -1,7 +1,7 @@
 {
-  "name": "actividad-2",
+  "name": "actividad3",
   "version": "1.0.0",
-  "description": "Actividad 2 - Aplicaciones Web 2",
+  "description": "Actividad 3 - Servidor HTTP",
   "main": "index.mjs",
   "scripts": {
     "dev": "node index.mjs"
